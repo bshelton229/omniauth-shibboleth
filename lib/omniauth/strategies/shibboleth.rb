@@ -12,15 +12,9 @@ module OmniAuth
       option :debug, false
       option :request_type, :env
 
+      # The request phase simply re-directs to the callback phase
       def request_phase
-        [ 
-          302,
-          {
-            'Location' => script_name + callback_path + query_string,
-            'Content-Type' => 'text/plain'
-          },
-          ["You are being redirected to Shibboleth SP/IdP for sign-in."]
-        ]
+        redirect script_name + callback_path + query_string
       end
 
       def request_params
@@ -57,7 +51,7 @@ module OmniAuth
         return fail!(:no_shibboleth_session) unless (request_param(options.shib_session_id_field.to_s) || request_param(options.shib_application_id_field.to_s))
         super
       end
-      
+
       uid do
         request_param(options.uid_field.to_s)
       end
